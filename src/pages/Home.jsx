@@ -9,43 +9,45 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [inpogress, setInProgress] = useState(false);
   const [result, setResult] = useState(null);
-    const [requestId, setRequestId] = useState(null);
-    const [error, setError] = useState(null);
+  const [requestId, setRequestId] = useState(null);
+  const [error, setError] = useState(null);
 
   fal.config({
     credentials: import.meta.env.VITE_FAL_API_KEY || "",
   });
 
   async function handlePrompt() {
-    const result = await fal.subscribe("fal-ai/veo3", {
-      input: {
-        prompt: prompt || " ",
-        aspect_ratio: aspectRatio || "16:9",
-        duration: duration + "s" || "1s",
-        enhance_prompt: true,
-        generate_audio: audio || true,
-      },
-      logs: true,
-      onQueueUpdate: (update) => {
-        if (update.status === "IN_QUEUE") {
-          console.log("In queue:", update);
-          setLoading(true);
-          update.logs.map((log) => log.message).forEach(console.log);
-        }
-        if (update.status === "IN_PROGRESS") {
-          console.log("In progress:", update);
-          setInProgress(true);
-          update.logs.map((log) => log.message).forEach(console.log);
-        }
+    const result = await fal
+      .subscribe("fal-ai/veo3", {
+        input: {
+          prompt: prompt || " ",
+          aspect_ratio: aspectRatio || "16:9",
+          duration: duration + "s" || "1s",
+          enhance_prompt: true,
+          generate_audio: audio || true,
         },
-    }).catch((err) => {
-      console.error("Error during subscription:", err);
-      setError("An error occurred");
-      setLoading(false);
+        logs: true,
+        onQueueUpdate: (update) => {
+          if (update.status === "IN_QUEUE") {
+            console.log("In queue:", update);
+            setLoading(true);
+            update.logs.map((log) => log.message).forEach(console.log);
+          }
+          if (update.status === "IN_PROGRESS") {
+            console.log("In progress:", update);
+            setInProgress(true);
+            update.logs.map((log) => log.message).forEach(console.log);
+          }
+        },
+      })
+      .catch((err) => {
+        console.error("Error during subscription:", err);
+        setError("An error occurred");
+        setLoading(false);
         setInProgress(false);
-        
-      return null;
-    });
+
+        return null;
+      });
 
     setRequestId(result?.requestId);
     setResult(result?.data?.video?.url);
@@ -57,7 +59,9 @@ export default function Home() {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col gap-6 items-center w-lg w-fit">
-        <h1 className="text-2xl font-bold">Welcome to the Text to video AI model</h1>
+        <h1 className="text-2xl font-bold">
+          Welcome to the Text to video AI model
+        </h1>
         {/* <div className="w-lg border border-white/10 rounded-lg h-[260px] flex items-center justify-center flex-col gap-3">
           Upload your Image here
         </div> */}
@@ -74,7 +78,7 @@ export default function Home() {
         <div className="flex gap-3 items-center justify-between w-full">
           <input
             type="number"
-            placeholder="Duration (e.g. 8)"
+            placeholder="Duration (min. 8)"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             className="w-full px-4 py-2.5 border border-white/10 rounded-lg"
@@ -98,10 +102,10 @@ export default function Home() {
           </select>
         </div>
         {requestId && <p>{requestId}</p>}
-              {result && <video src={result}></video>}
+        {result && <video src={result}></video>}
         {error && <p className="text-red-500">{error}</p>}
         <button
-          className="w-full bg-[#0c2c47] text-white px-10 py-3 rounded-lg"
+          className="w-full bg-[#8EB69B] text-white px-10 py-3 rounded-lg cursor-pointer hover:bg-[#7a9f8b] transition-all duration-200"
           onClick={() => handlePrompt()}
         >
           {loading ? "In queue..." : inpogress ? "In progress" : "Send Prompt"}
