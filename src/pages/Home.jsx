@@ -9,7 +9,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [inpogress, setInProgress] = useState(false);
   const [result, setResult] = useState(null);
-  const [requestId, setRequestId] = useState(null);
+    const [requestId, setRequestId] = useState(null);
+    const [error, setError] = useState(null);
 
   fal.config({
     credentials: import.meta.env.VITE_FAL_API_KEY || "",
@@ -36,20 +37,27 @@ export default function Home() {
           setInProgress(true);
           update.logs.map((log) => log.message).forEach(console.log);
         }
-      },
+        },
+    }).catch((err) => {
+      console.error("Error during subscription:", err);
+      setError("An error occurred");
+      setLoading(false);
+        setInProgress(false);
+        
+      return null;
     });
 
     setRequestId(result?.requestId);
     setResult(result?.data?.video?.url);
     console.log("Result:", result);
-    console.log(result.data);
-    console.log(result.requestId);
+    console.log(result?.data);
+    console.log(result?.requestId);
   }
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col gap-6 items-center w-lg w-fit">
-        <h1 className="text-2xl font-bold">Welcome to the Home Page</h1>
+        <h1 className="text-2xl font-bold">Welcome to the Text to video AI model</h1>
         {/* <div className="w-lg border border-white/10 rounded-lg h-[260px] flex items-center justify-center flex-col gap-3">
           Upload your Image here
         </div> */}
@@ -90,7 +98,8 @@ export default function Home() {
           </select>
         </div>
         {requestId && <p>{requestId}</p>}
-        {result && <video src={result}></video>}
+              {result && <video src={result}></video>}
+        {error && <p className="text-red-500">{error}</p>}
         <button
           className="w-full bg-[#0c2c47] text-white px-10 py-3 rounded-lg"
           onClick={() => handlePrompt()}
