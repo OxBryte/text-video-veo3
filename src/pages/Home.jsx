@@ -13,7 +13,8 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   fal.config({
-    credentials: import.meta.env.VITE_FAL_API_KEY || "",
+    // credentials: import.meta.env.VITE_FAL_API_KEY || "",
+    credentials: "",
   });
 
   async function handlePrompt() {
